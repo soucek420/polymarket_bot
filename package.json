@@ -1,5 +1,5 @@
 {
-  "name": "polymarket-liquidity-rewards-optimizer",
+  "name": "polymarket-bot",
   "version": "1.0.0",
   "private": true,
   "description": "Analytics and simulation tool for Polymarket liquidity rewards",

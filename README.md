@@ -193,11 +193,16 @@ You need to create two configuration files for the application to run properly.
    cd packages/backend
    ```
 
-2. Create a new file called `.env`:
+2. Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+
+   Or manually create a new file called `.env`:
    - **Windows:** Type `notepad .env` and press Enter
    - **macOS/Linux:** Type `touch .env` then `nano .env` (or use any text editor)
 
-3. Copy and paste this into the file:
+3. The `.env` file should contain:
    ```env
    PORT=3001
    FRONTEND_URL=http://localhost:5173
@@ -212,11 +217,16 @@ You need to create two configuration files for the application to run properly.
    cd ../frontend
    ```
 
-2. Create a new file called `.env`:
+2. Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+
+   Or manually create a new file called `.env`:
    - **Windows:** Type `notepad .env` and press Enter
    - **macOS/Linux:** Type `touch .env` then `nano .env`
 
-3. Copy and paste this into the file:
+3. The `.env` file should contain:
    ```env
    VITE_API_URL=http://localhost:3001/api
    ```
@@ -376,14 +386,14 @@ The "Market Rankings" table displays:
 ## 🔧 Configuration
 
 ### Backend Environment Variables
-Create `packages/backend/.env`:
+Copy `packages/backend/.env.example` to `packages/backend/.env`:
 ```env
 PORT=3001
 FRONTEND_URL=http://localhost:5173
 ```
 
 ### Frontend Environment Variables
-Create `packages/frontend/.env`:
+Copy `packages/frontend/.env.example` to `packages/frontend/.env`:
 ```env
 VITE_API_URL=http://localhost:3001/api
 ```

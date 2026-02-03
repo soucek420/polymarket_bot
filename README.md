@@ -62,54 +62,235 @@ polymarket_bot/
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ and npm
-- MetaMask or compatible Web3 wallet (for viewing your orders)
+
+Before you begin, you'll need to install the following software on your computer:
+
+| Requirement | Version | Download Link | Why You Need It |
+|-------------|---------|---------------|-----------------|
+| Node.js | 18+ | [Download Node.js](https://nodejs.org/en/download) | JavaScript runtime for running the application |
+| npm | Included with Node.js | Installs automatically with Node.js | Package manager for installing dependencies |
+| Git | Latest | [Download Git](https://git-scm.com/downloads) | Version control for cloning the repository |
+| MetaMask (optional) | Latest | [Install MetaMask](https://metamask.io/download/) | Web3 wallet for viewing your Polymarket orders |
+
+#### Step 1: Install Node.js and npm
+
+**For Windows:**
+1. Go to [nodejs.org](https://nodejs.org/en/download) and click the **Windows Installer** button
+2. Download the **LTS (Long Term Support)** version
+3. Run the downloaded `.msi` file
+4. Follow the installation wizard (accept all defaults)
+5. **Verify installation** by opening Command Prompt or PowerShell and running:
+   ```bash
+   node --version
+   npm --version
+   ```
+   You should see version numbers like `v18.x.x` and `9.x.x`
+
+**For macOS:**
+1. Go to [nodejs.org](https://nodejs.org/en/download) and click the **macOS Installer** button
+2. Download the **LTS (Long Term Support)** version
+3. Run the downloaded `.pkg` file
+4. Follow the installation wizard
+5. **Verify installation** by opening Terminal and running:
+   ```bash
+   node --version
+   npm --version
+   ```
+
+**For Linux (Ubuntu/Debian):**
+```bash
+# Using NodeSource repository for latest version
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Verify installation
+node --version
+npm --version
+```
+
+#### Step 2: Install Git (if not already installed)
+
+**For Windows:**
+1. Go to [git-scm.com/downloads](https://git-scm.com/downloads) and click **Windows**
+2. Download and run the installer
+3. Accept all default settings during installation
+
+**For macOS:**
+```bash
+# If you have Homebrew installed:
+brew install git
+
+# Or download from git-scm.com
+```
+
+**Verify Git installation:**
+```bash
+git --version
+```
+
+#### Step 3: Install MetaMask (Optional - for viewing your orders)
+
+MetaMask is a browser extension that allows you to connect your wallet to see your Polymarket orders.
+
+**Chrome/Brave/Edge:**
+1. Go to [metamask.io/download](https://metamask.io/download/)
+2. Click **Install MetaMask for Chrome**
+3. Click **Add to Chrome**
+4. Follow the setup wizard to create a new wallet or import an existing one
+
+**Firefox:**
+1. Go to [metamask.io/download](https://metamask.io/download/)
+2. Click **Install MetaMask for Firefox**
+3. Click **Add to Firefox**
+4. Follow the setup wizard
+
+> **Note:** MetaMask is only needed if you want to view your own orders. You can still browse markets and use the simulator without it.
+
+---
 
 ### Installation
 
-1. **Clone the repository**
+#### Step 1: Clone the Repository
+
+Open your terminal/command prompt and run:
+
 ```bash
-git clone <repository-url>
-cd polymarket_bot
+# Clone the repository
+git clone https://github.com/yourusername/polymarket-liquidity-rewards-optimizer.git
+
+# Navigate into the project folder
+cd polymarket-liquidity-rewards-optimizer
 ```
 
-2. **Install dependencies**
+**What this does:** Downloads a copy of the project code to your computer.
+
+#### Step 2: Install Dependencies
+
+Inside the project folder, run:
+
 ```bash
 npm install
 ```
 
-This will install dependencies for both backend and frontend packages.
+**What this does:**
+- Downloads all required libraries for both the backend and frontend
+- Creates a `node_modules` folder with all dependencies
+- This may take 2-5 minutes depending on your internet speed
+
+**Troubleshooting:**
+- If you see `npm ERR!`, try running: `npm cache clean --force` then `npm install` again
+- On Windows, if you get permission errors, run Command Prompt as Administrator
+- On macOS/Linux, if you get permission errors, check that you own the directory
+
+#### Step 3: Set Up Environment Variables
+
+You need to create two configuration files for the application to run properly.
+
+**Create Backend Environment File:**
+
+1. Navigate to the backend package:
+   ```bash
+   cd packages/backend
+   ```
+
+2. Create a new file called `.env`:
+   - **Windows:** Type `notepad .env` and press Enter
+   - **macOS/Linux:** Type `touch .env` then `nano .env` (or use any text editor)
+
+3. Copy and paste this into the file:
+   ```env
+   PORT=3001
+   FRONTEND_URL=http://localhost:5173
+   ```
+
+4. Save and close the file
+
+**Create Frontend Environment File:**
+
+1. Navigate to the frontend package:
+   ```bash
+   cd ../frontend
+   ```
+
+2. Create a new file called `.env`:
+   - **Windows:** Type `notepad .env` and press Enter
+   - **macOS/Linux:** Type `touch .env` then `nano .env`
+
+3. Copy and paste this into the file:
+   ```env
+   VITE_API_URL=http://localhost:3001/api
+   ```
+
+4. Save and close the file
+
+5. Go back to the project root:
+   ```bash
+   cd ../..
+   ```
+
+**What this does:** Tells the frontend where to find the backend API, and sets which port the backend listens on.
+
+---
 
 ### Running the Application
 
-#### Development Mode (Both servers)
+#### Option 1: Run Both Servers (Recommended)
+
+From the project root folder, run:
+
 ```bash
 npm run dev
 ```
 
-This starts:
-- Backend API server on `http://localhost:3001`
-- Frontend dev server on `http://localhost:5173`
+**What this does:**
+- Starts the **Backend API** on `http://localhost:3001`
+- Starts the **Frontend** on `http://localhost:5173`
+- Runs both in parallel using a single command
 
-#### Backend Only
+**Verify it's working:**
+1. Open your browser and go to: `http://localhost:5173`
+2. You should see the application loading
+3. If you see a page with "Markets with Rewards" heading, it's working!
+
+#### Option 2: Run Servers Separately
+
+If you prefer to run them in separate terminal windows:
+
+**Terminal 1 - Backend:**
 ```bash
 npm run dev:backend
 ```
+You should see: `Server running on port 3001`
 
-#### Frontend Only
+**Terminal 2 - Frontend:**
 ```bash
 npm run dev:frontend
 ```
+You should see: `Local: http://localhost:5173/`
+
+---
 
 ### Building for Production
+
+When you're ready to deploy, build the application:
 
 ```bash
 npm run build
 ```
 
-This builds both packages:
-- Backend: Compiled to `packages/backend/dist/`
-- Frontend: Compiled to `packages/frontend/dist/`
+**What this does:**
+- Compiles the backend TypeScript to JavaScript in `packages/backend/dist/`
+- Builds the frontend for production in `packages/frontend/dist/`
+- Optimizes code for better performance
+
+**To run the production build:**
+```bash
+# Start the backend (serves both API and frontend)
+cd packages/backend
+npm start
+```
+
+The production build will be available at `http://localhost:3001`
 
 ## 📊 How It Works
 

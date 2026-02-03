@@ -159,7 +159,7 @@ Open your terminal/command prompt and run:
 git clone https://github.com/soucek420/polymarket_bot.git
 
 # Navigate into the project folder
-cd polymarket-liquidity-rewards-optimizer
+cd polymarket_bot
 ```
 
 **What this does:** Downloads a copy of the project code to your computer.

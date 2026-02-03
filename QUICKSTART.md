@@ -1,41 +1,127 @@
 # Quick Start Guide
 
+This guide will get you up and running in under 10 minutes.
+
 ## Prerequisites
-- Node.js 18 or higher
-- npm
-- MetaMask or compatible Web3 wallet (optional, for viewing your orders)
 
-## Installation
+| Software | Download Link | Version |
+|----------|---------------|---------|
+| Node.js | [Download](https://nodejs.org/en/download) | 18+ |
+| Git | [Download](https://git-scm.com/downloads) | Latest |
+| MetaMask (optional) | [Install](https://metamask.io/download/) | Latest |
 
-1. **Install all dependencies:**
+### Quick Prerequisites Check
+
+Before starting, verify you have the required software:
+
+```bash
+# Check Node.js (should show v18.x.x or higher)
+node --version
+
+# Check npm (should show 9.x.x or higher)
+npm --version
+
+# Check Git (should show any version)
+git --version
+```
+
+If any command shows "command not found", follow the detailed installation steps in the main [README.md](README.md).
+
+---
+
+## Installation (3 Steps)
+
+### Step 1: Clone the Repository
+
+Open your terminal and run:
+
+```bash
+git clone https://github.com/yourusername/polymarket-liquidity-rewards-optimizer.git
+cd polymarket-liquidity-rewards-optimizer
+```
+
+### Step 2: Install Dependencies
+
+In the project folder, run:
+
 ```bash
 npm install
 ```
 
-This will install dependencies for both backend and frontend workspaces.
+This downloads all required packages for both backend and frontend. **Takes 2-5 minutes.**
+
+### Step 3: Create Environment Files
+
+**Backend `.env` file:**
+
+```bash
+cd packages/backend
+echo "PORT=3001" > .env
+echo "FRONTEND_URL=http://localhost:5173" >> .env
+cd ../..
+```
+
+**Frontend `.env` file:**
+
+```bash
+cd packages/frontend
+echo "VITE_API_URL=http://localhost:3001/api" > .env
+cd ../..
+```
+
+---
 
 ## Running the Application
 
-### Option 1: Run Both (Recommended)
-Start both backend and frontend in parallel:
+### Start Everything at Once (Recommended)
+
+From the project root:
+
 ```bash
 npm run dev
 ```
 
-- Backend API: http://localhost:3001
-- Frontend UI: http://localhost:5173
+You should see output like:
+```
+> Server running on port 3001
+> Local: http://localhost:5173/
+```
 
-### Option 2: Run Separately
+### Access the Application
 
-**Backend only:**
+1. Open your browser: **[http://localhost:5173](http://localhost:5173)**
+2. Wait 10-15 seconds for markets to load
+3. Click **"Connect Wallet"** (top right) to see your orders (optional)
+
+---
+
+## Alternative: Run Separately
+
+Useful for debugging:
+
+**Terminal 1 - Backend:**
 ```bash
 npm run dev:backend
 ```
 
-**Frontend only:**
+**Terminal 2 - Frontend:**
 ```bash
 npm run dev:frontend
 ```
+
+---
+
+## Quick Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `node: command not found` | Install Node.js from [nodejs.org](https://nodejs.org/en/download) |
+| `npm install` fails | Run `npm cache clean --force` then try again |
+| Port 3001 in use | Kill other processes or change `PORT` in `packages/backend/.env` |
+| Blank page at localhost:5173 | Wait 15 seconds for backend to start, then refresh |
+| "Cannot connect to backend" | Make sure backend is running on port 3001 |
+
+For detailed troubleshooting, see the [Troubleshooting](#troubleshooting) section below.
 
 ## Building for Production
 

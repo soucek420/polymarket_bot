@@ -156,7 +156,7 @@ Open your terminal/command prompt and run:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/polymarket-liquidity-rewards-optimizer.git
+git clone https://github.com/soucek420/polymarket_bot.git
 
 # Navigate into the project folder
 cd polymarket-liquidity-rewards-optimizer

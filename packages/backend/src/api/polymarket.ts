@@ -78,8 +78,12 @@ export class PolymarketAPI {
           maxRewardSpread,
           minSizeRequirement,
           lastUpdated: Date.now(),
-          volume: apiMarket.volume ? D(apiMarket.volume) : undefined,
-          liquidity: apiMarket.liquidity ? D(apiMarket.liquidity) : undefined,
+          volume: apiMarket.volume !== undefined && apiMarket.volume !== null
+            ? D(apiMarket.volume)
+            : undefined,
+          liquidity: apiMarket.liquidity !== undefined && apiMarket.liquidity !== null
+            ? D(apiMarket.liquidity)
+            : undefined,
         });
       }
 

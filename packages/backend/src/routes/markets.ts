@@ -85,7 +85,7 @@ router.get('/:id/orderbook', async (req: Request, res: Response) => {
     
     const midpoint = calculateMidpoint(orderBook.bestBid, orderBook.bestAsk);
     const market = await polymarketAPI.fetchMarketById(id);
-    const bandBounds = market ? getRewardBandBounds(market.maxRewardSpread) : null;
+    const bandBounds = market ? getRewardBandBounds(midpoint, market.maxRewardSpread) : null;
     
     res.json({
       success: true,
@@ -138,7 +138,7 @@ router.get('/:id/stats', async (req: Request, res: Response) => {
     }
     
     const midpoint = calculateMidpoint(orderBook.bestBid, orderBook.bestAsk);
-    const bandBounds = getRewardBandBounds(market.maxRewardSpread);
+    const bandBounds = getRewardBandBounds(midpoint, market.maxRewardSpread);
     
     res.json({
       success: true,

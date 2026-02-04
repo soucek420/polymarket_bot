@@ -57,7 +57,7 @@ router.post('/calculate', async (req: Request, res: Response) => {
     const userShare = calculateUserShare(Qmin, totalQmin);
     const estimatedDailyReward = estimateDailyReward(userShare, market.rewardPoolPerDay);
     
-    const bandBounds = getRewardBandBounds(v);
+    const bandBounds = getRewardBandBounds(midpoint, v);
     const inBand = isMidpointInMainBand(midpoint);
     
     res.json({

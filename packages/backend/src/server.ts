@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import path from 'path';
 import dotenv from 'dotenv';
 import marketsRouter from './routes/markets';
 import rewardsRouter from './routes/rewards';
@@ -11,6 +12,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// CORS configuration
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true,
@@ -19,11 +21,13 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Request logging
 app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
 
+// Health check
 app.get('/health', (req: Request, res: Response) => {
   res.json({
     status: 'healthy',
@@ -32,10 +36,16 @@ app.get('/health', (req: Request, res: Response) => {
   });
 });
 
+// API Routes
 app.use('/api/markets', marketsRouter);
 app.use('/api/rewards', rewardsRouter);
 app.use('/api/simulator', simulatorRouter);
 
+// Serve static files from the React app
+const frontendPath = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(frontendPath));
+
+// Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error('Error:', err);
   res.status(500).json({
@@ -44,10 +54,26 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-app.use((req: Request, res: Response) => {
-  res.status(404).json({
-    success: false,
-    error: 'Route not found',
+// Handle React routing, return all requests to React app
+app.get('*', (req: Request, res: Response) => {
+  // If it's an API request that didn't match any route
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({
+      success: false,
+      error: 'API endpoint not found',
+    });
+  }
+  
+  // Otherwise serve the index.html from frontend dist
+  const indexPath = path.join(frontendPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      // If index.html is not found, it means the frontend hasn't been built
+      res.status(404).json({
+        success: false,
+        error: 'Route not found. If you are in development, please use http://localhost:5173',
+      });
+    }
   });
 });
 

@@ -37,11 +37,10 @@ export const estimateDailyReward = (userShare: Decimal, poolPerDay: Decimal): De
   return userShare.times(poolPerDay);
 };
 
-export const getRewardBandBounds = (v: Decimal): RewardBandBounds => {
-  const halfV = v.dividedBy(2);
+export const getRewardBandBounds = (midpoint: Decimal, v: Decimal): RewardBandBounds => {
   return {
-    lower: D(0.5).minus(halfV),
-    upper: D(0.5).plus(halfV),
+    lower: midpoint.minus(v),
+    upper: midpoint.plus(v),
   };
 };
 

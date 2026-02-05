@@ -6,6 +6,9 @@ build/
 .env
 .env.local
 .env.*.local
+
+!packages/backend/.env
+!packages/frontend/.env
 *.tsbuildinfo
 coverage/
 .vscode/

@@ -61,6 +61,10 @@ polymarket_bot/
 
 ## 🚀 Getting Started
 
+### Local Development Ports
+- **Frontend (Vite)**: http://localhost:5173
+- **Backend API**: http://localhost:3001 (API base: http://localhost:3001/api)
+
 ### Prerequisites
 
 Before you begin, you'll need to install the following software on your computer:
@@ -184,59 +188,20 @@ npm install
 
 #### Step 3: Set Up Environment Variables
 
-You need to create two configuration files for the application to run properly.
+The repository already includes ready-to-use `.env` files for both packages. Review or adjust them if you need different ports.
 
-**Create Backend Environment File:**
+**Backend (`packages/backend/.env`):**
+```env
+PORT=3001
+FRONTEND_URL=http://localhost:5173
+```
 
-1. Navigate to the backend package:
-   ```bash
-   cd packages/backend
-   ```
+**Frontend (`packages/frontend/.env`):**
+```env
+VITE_API_URL=http://localhost:3001/api
+```
 
-2. Copy the example environment file:
-   ```bash
-   cp .env.example .env
-   ```
-
-   Or manually create a new file called `.env`:
-   - **Windows:** Type `notepad .env` and press Enter
-   - **macOS/Linux:** Type `touch .env` then `nano .env` (or use any text editor)
-
-3. The `.env` file should contain:
-   ```env
-   PORT=3001
-   FRONTEND_URL=http://localhost:5173
-   ```
-
-4. Save and close the file
-
-**Create Frontend Environment File:**
-
-1. Navigate to the frontend package:
-   ```bash
-   cd ../frontend
-   ```
-
-2. Copy the example environment file:
-   ```bash
-   cp .env.example .env
-   ```
-
-   Or manually create a new file called `.env`:
-   - **Windows:** Type `notepad .env` and press Enter
-   - **macOS/Linux:** Type `touch .env` then `nano .env`
-
-3. The `.env` file should contain:
-   ```env
-   VITE_API_URL=http://localhost:3001/api
-   ```
-
-4. Save and close the file
-
-5. Go back to the project root:
-   ```bash
-   cd ../..
-   ```
+If you'd rather recreate them, copy from the `.env.example` files in each package.
 
 **What this does:** Tells the frontend where to find the backend API, and sets which port the backend listens on.
 
@@ -386,14 +351,14 @@ The "Market Rankings" table displays:
 ## 🔧 Configuration
 
 ### Backend Environment Variables
-Copy `packages/backend/.env.example` to `packages/backend/.env`:
+The repository includes `packages/backend/.env` with the defaults below (edit if you need to change ports):
 ```env
 PORT=3001
 FRONTEND_URL=http://localhost:5173
 ```
 
 ### Frontend Environment Variables
-Copy `packages/frontend/.env.example` to `packages/frontend/.env`:
+The repository includes `packages/frontend/.env` with:
 ```env
 VITE_API_URL=http://localhost:3001/api
 ```

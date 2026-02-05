@@ -50,23 +50,21 @@ npm install
 
 This downloads all required packages for both backend and frontend. **Takes 2-5 minutes.**
 
-### Step 3: Create Environment Files
+### Step 3: Confirm Environment Files
+
+The repository already includes `.env` files in both packages. Adjust the values if you need different ports.
 
 **Backend `.env` file:**
 
-```bash
-cd packages/backend
-echo "PORT=3001" > .env
-echo "FRONTEND_URL=http://localhost:5173" >> .env
-cd ../..
+```env
+PORT=3001
+FRONTEND_URL=http://localhost:5173
 ```
 
 **Frontend `.env` file:**
 
-```bash
-cd packages/frontend
-echo "VITE_API_URL=http://localhost:3001/api" > .env
-cd ../..
+```env
+VITE_API_URL=http://localhost:3001/api
 ```
 
 ---

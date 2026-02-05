@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs';
 import dotenv from 'dotenv';
 import marketsRouter from './routes/markets';
 import rewardsRouter from './routes/rewards';
@@ -64,16 +65,19 @@ app.get('*', (req: Request, res: Response) => {
     });
   }
   
-  // Otherwise serve the index.html from frontend dist
   const indexPath = path.join(frontendPath, 'index.html');
-  res.sendFile(indexPath, (err) => {
-    if (err) {
-      // If index.html is not found, it means the frontend hasn't been built
-      res.status(404).json({
-        success: false,
-        error: 'Route not found. If you are in development, please use http://localhost:5173',
-      });
-    }
+  if (fs.existsSync(indexPath)) {
+    return res.sendFile(indexPath);
+  }
+  if (req.path === '/') {
+    return res.json({
+      status: 'ok',
+      message: 'Backend is running. Use /api for endpoints or /health for status.',
+    });
+  }
+  res.status(404).json({
+    success: false,
+    error: 'Route not found. If you are in development, please use http://localhost:5173',
   });
 });
 

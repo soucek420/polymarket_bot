@@ -17,7 +17,7 @@ const router = Router();
 
 router.post('/calculate', async (req: Request, res: Response) => {
   try {
-    const { walletAddress, marketId } = req.body;
+    const { walletAddress, funderAddress, marketId } = req.body;
     
     if (!walletAddress || !marketId) {
       return res.status(400).json({
@@ -25,6 +25,8 @@ router.post('/calculate', async (req: Request, res: Response) => {
         error: 'walletAddress and marketId are required',
       });
     }
+
+    const makerAddress = funderAddress || walletAddress;
     
     const market = await polymarketAPI.fetchMarketById(marketId);
     if (!market) {
@@ -42,7 +44,7 @@ router.post('/calculate', async (req: Request, res: Response) => {
       });
     }
     
-    const userOrders = await walletAPI.fetchOrdersByMarket(walletAddress, marketId);
+    const userOrders = await walletAPI.fetchOrdersByMarket(makerAddress, marketId);
     
     const midpoint = calculateMidpoint(orderBook.bestBid, orderBook.bestAsk);
     const v = market.maxRewardSpread;
@@ -139,7 +141,7 @@ router.post('/estimate', async (req: Request, res: Response) => {
 
 router.post('/batch', async (req: Request, res: Response) => {
   try {
-    const { walletAddress } = req.body;
+    const { walletAddress, funderAddress } = req.body;
     
     if (!walletAddress) {
       return res.status(400).json({
@@ -147,8 +149,9 @@ router.post('/batch', async (req: Request, res: Response) => {
         error: 'walletAddress is required',
       });
     }
-    
-    const userOrders = await walletAPI.fetchUserOrders(walletAddress);
+
+    const makerAddress = funderAddress || walletAddress;
+    const userOrders = await walletAPI.fetchUserOrders(makerAddress);
     const marketIds = [...new Set(userOrders.map(order => order.marketId))];
     
     const results = [];

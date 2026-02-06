@@ -4,8 +4,8 @@ import { useUIStore } from '../store/uiStore';
 import { formatCurrency, formatNumber } from '../utils/formatting';
 
 export const MarketTable: React.FC = () => {
-  const { walletAddress, setSelectedMarketId } = useUIStore();
-  const { data: rankings, isLoading } = useMarketComparison(walletAddress);
+  const { walletAddress, funderAddress, setSelectedMarketId } = useUIStore();
+  const { data: rankings, isLoading } = useMarketComparison(walletAddress, funderAddress);
   const [sortBy, setSortBy] = useState<'efficiency' | 'reward' | 'capital'>('efficiency');
 
   if (!walletAddress) {

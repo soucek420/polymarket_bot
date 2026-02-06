@@ -8,10 +8,10 @@ import { formatCurrency, formatPrice, formatPercent } from '../utils/formatting'
 import Decimal from 'decimal.js';
 
 export const OrderSimulator: React.FC = () => {
-  const { walletAddress, selectedMarketId, isSimulatorOpen, setIsSimulatorOpen } = useUIStore();
+  const { walletAddress, funderAddress, selectedMarketId, isSimulatorOpen, setIsSimulatorOpen } = useUIStore();
   const { data: market } = useMarket(selectedMarketId);
   const { data: orderBook } = useOrderBook(selectedMarketId);
-  const { data: reward } = useRewardCalculation(walletAddress, selectedMarketId);
+  const { data: reward } = useRewardCalculation(walletAddress, selectedMarketId, funderAddress);
   
   const [orderIndex] = useState(0);
   const [simulatedPrice, setSimulatedPrice] = useState<string>('');
@@ -35,7 +35,8 @@ export const OrderSimulator: React.FC = () => {
         selectedMarketId,
         orderIndex,
         parseFloat(simulatedPrice),
-        simulatedSize ? parseFloat(simulatedSize) : undefined
+        simulatedSize ? parseFloat(simulatedSize) : undefined,
+        funderAddress
       );
       setSimulation(response.data.data);
     } catch (error) {
@@ -53,7 +54,7 @@ export const OrderSimulator: React.FC = () => {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [simulatedPrice, simulatedSize, walletAddress, selectedMarketId]);
+  }, [simulatedPrice, simulatedSize, walletAddress, funderAddress, selectedMarketId]);
 
   if (!walletAddress) {
     return (

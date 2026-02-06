@@ -6,8 +6,8 @@ import { formatNumber, formatPercent } from '../utils/formatting';
 import Decimal from 'decimal.js';
 
 export const ComparisonChart: React.FC = () => {
-  const { walletAddress, selectedMarketId } = useUIStore();
-  const { data: reward, isLoading } = useRewardCalculation(walletAddress, selectedMarketId);
+  const { walletAddress, funderAddress, selectedMarketId } = useUIStore();
+  const { data: reward, isLoading } = useRewardCalculation(walletAddress, selectedMarketId, funderAddress);
 
   if (!walletAddress) {
     return (

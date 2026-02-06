@@ -1,11 +1,23 @@
 import React from 'react';
+import axios from 'axios';
 import { useMarkets } from '../hooks/useMarkets';
 import { useUIStore } from '../store/uiStore';
 import { formatCurrency, formatPercent, formatPrice } from '../utils/formatting';
 
 export const MarketGrid: React.FC = () => {
-  const { data: markets, isLoading, error } = useMarkets();
+  const { data: markets, isLoading, error, refetch, isFetching } = useMarkets();
   const { selectedMarketId, setSelectedMarketId } = useUIStore();
+
+  const errorMessage = (() => {
+    if (!error) return null;
+    if (axios.isAxiosError(error)) {
+      return error.response?.data?.error || error.message;
+    }
+    if (error instanceof Error) {
+      return error.message;
+    }
+    return 'Unable to load markets.';
+  })();
 
   if (isLoading) {
     return (
@@ -24,7 +36,17 @@ export const MarketGrid: React.FC = () => {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Markets</h2>
-        <p className="text-red-500">Error loading markets</p>
+        <p className="text-red-500 font-medium">Error loading markets</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          {errorMessage} Ensure the backend is running and reachable.
+        </p>
+        <button
+          onClick={() => refetch()}
+          disabled={isFetching}
+          className="mt-4 inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {isFetching ? 'Retrying...' : 'Retry'}
+        </button>
       </div>
     );
   }

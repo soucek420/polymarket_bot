@@ -19,13 +19,14 @@ export interface SimulationResult {
 export const useSimulation = (
   walletAddress: string | null,
   marketId: string | null,
-  orderIndex: number | null
+  orderIndex: number | null,
+  funderAddress?: string | null
 ) => {
   const [debouncedPrice, setDebouncedPrice] = useState<number | undefined>();
   const [debouncedSize, setDebouncedSize] = useState<number | undefined>();
 
   return useQuery({
-    queryKey: ['simulation', walletAddress, marketId, orderIndex, debouncedPrice, debouncedSize],
+    queryKey: ['simulation', walletAddress, funderAddress, marketId, orderIndex, debouncedPrice, debouncedSize],
     queryFn: async () => {
       if (!walletAddress || !marketId || orderIndex === null) return null;
       const response = await simulatorAPI.move(
@@ -33,7 +34,8 @@ export const useSimulation = (
         marketId,
         orderIndex,
         debouncedPrice,
-        debouncedSize
+        debouncedSize,
+        funderAddress
       );
       return response.data.data as SimulationResult;
     },
@@ -41,12 +43,12 @@ export const useSimulation = (
   });
 };
 
-export const useMarketComparison = (walletAddress: string | null) => {
+export const useMarketComparison = (walletAddress: string | null, funderAddress?: string | null) => {
   return useQuery({
-    queryKey: ['marketComparison', walletAddress],
+    queryKey: ['marketComparison', walletAddress, funderAddress],
     queryFn: async () => {
       if (!walletAddress) return [];
-      const response = await simulatorAPI.marketComparison(walletAddress);
+      const response = await simulatorAPI.marketComparison(walletAddress, funderAddress);
       return response.data.data;
     },
     enabled: !!walletAddress,
@@ -74,12 +76,12 @@ export interface PortfolioAnalysis {
   rankings: any[];
 }
 
-export const usePortfolioAnalysis = (walletAddress: string | null) => {
+export const usePortfolioAnalysis = (walletAddress: string | null, funderAddress?: string | null) => {
   return useQuery({
-    queryKey: ['portfolio', walletAddress],
+    queryKey: ['portfolio', walletAddress, funderAddress],
     queryFn: async () => {
       if (!walletAddress) return null;
-      const response = await simulatorAPI.portfolio(walletAddress);
+      const response = await simulatorAPI.portfolio(walletAddress, funderAddress);
       return response.data.data as PortfolioAnalysis;
     },
     enabled: !!walletAddress,

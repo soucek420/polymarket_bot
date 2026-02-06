@@ -6,11 +6,7 @@ import { UserOrder, ApiUserOrder } from '../types';
 export class WalletAPI {
   private baseURL: string = 'https://clob.polymarket.com';
 
-  async fetchUserOrders(walletAddress: string): Promise<UserOrder[]> {
-    const cacheKey = `user_orders_${walletAddress}`;
-    const cached = userOrderCache.get(cacheKey);
-    if (cached) return cached as UserOrder[];
-
+  private async requestUserOrders(walletAddress: string): Promise<ApiUserOrder[]> {
     try {
       const response = await axios.get<ApiUserOrder[]>(`${this.baseURL}/orders`, {
         params: {
@@ -19,8 +15,41 @@ export class WalletAPI {
         },
         timeout: 10000,
       });
+      return Array.isArray(response.data) ? response.data : [];
+    } catch (error: any) {
+      if (error?.response?.status !== 405) {
+        throw error;
+      }
 
-      const userOrders: UserOrder[] = response.data.map(order => {
+      const response = await axios.post(`${this.baseURL}/orders`, {
+        maker: walletAddress,
+        status: 'LIVE',
+      }, {
+        timeout: 10000,
+      });
+
+      const payload = response.data;
+      if (Array.isArray(payload)) {
+        return payload as ApiUserOrder[];
+      }
+      if (Array.isArray(payload?.data)) {
+        return payload.data as ApiUserOrder[];
+      }
+      if (Array.isArray(payload?.orders)) {
+        return payload.orders as ApiUserOrder[];
+      }
+      return [];
+    }
+  }
+
+  async fetchUserOrders(walletAddress: string): Promise<UserOrder[]> {
+    const cacheKey = `user_orders_${walletAddress}`;
+    const cached = userOrderCache.get(cacheKey);
+    if (cached) return cached as UserOrder[];
+
+    try {
+      const apiOrders = await this.requestUserOrders(walletAddress);
+      const userOrders: UserOrder[] = apiOrders.map(order => {
         const side = order.outcome === 'YES' ? 'YES' : 'NO';
         const orderType = order.side === 'BUY' ? 'BID' : 'ASK';
         

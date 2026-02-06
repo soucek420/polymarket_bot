@@ -6,11 +6,11 @@ import { UserOrder, ApiUserOrder } from '../types';
 export class WalletAPI {
   private baseURL: string = 'https://clob.polymarket.com';
 
-  private async requestUserOrders(walletAddress: string): Promise<ApiUserOrder[]> {
+  private async requestUserOrders(makerAddress: string): Promise<ApiUserOrder[]> {
     try {
       const response = await axios.get<ApiUserOrder[]>(`${this.baseURL}/orders`, {
         params: {
-          maker: walletAddress,
+          maker: makerAddress,
           status: 'LIVE',
         },
         timeout: 10000,
@@ -22,7 +22,7 @@ export class WalletAPI {
       }
 
       const response = await axios.post(`${this.baseURL}/orders`, {
-        maker: walletAddress,
+        maker: makerAddress,
         status: 'LIVE',
       }, {
         timeout: 10000,
@@ -42,13 +42,13 @@ export class WalletAPI {
     }
   }
 
-  async fetchUserOrders(walletAddress: string): Promise<UserOrder[]> {
-    const cacheKey = `user_orders_${walletAddress}`;
+  async fetchUserOrders(makerAddress: string): Promise<UserOrder[]> {
+    const cacheKey = `user_orders_${makerAddress}`;
     const cached = userOrderCache.get(cacheKey);
     if (cached) return cached as UserOrder[];
 
     try {
-      const apiOrders = await this.requestUserOrders(walletAddress);
+      const apiOrders = await this.requestUserOrders(makerAddress);
       const userOrders: UserOrder[] = apiOrders.map(order => {
         const side = order.outcome === 'YES' ? 'YES' : 'NO';
         const orderType = order.side === 'BUY' ? 'BID' : 'ASK';
@@ -66,19 +66,19 @@ export class WalletAPI {
       userOrderCache.set(cacheKey, userOrders);
       return userOrders;
     } catch (error: any) {
-      console.error(`Error fetching user orders for ${walletAddress}:`, error.message);
+      console.error(`Error fetching user orders for ${makerAddress}:`, error.message);
       return [];
     }
   }
 
-  async fetchOrdersByMarket(walletAddress: string, marketId: string): Promise<UserOrder[]> {
-    const allOrders = await this.fetchUserOrders(walletAddress);
+  async fetchOrdersByMarket(makerAddress: string, marketId: string): Promise<UserOrder[]> {
+    const allOrders = await this.fetchUserOrders(makerAddress);
     return allOrders.filter(order => order.marketId === marketId);
   }
 
-  clearCache(walletAddress?: string): void {
-    if (walletAddress) {
-      userOrderCache.delete(`user_orders_${walletAddress}`);
+  clearCache(makerAddress?: string): void {
+    if (makerAddress) {
+      userOrderCache.delete(`user_orders_${makerAddress}`);
     } else {
       userOrderCache.clear();
     }

@@ -4,8 +4,8 @@ import { useUIStore } from '../store/uiStore';
 import { formatCurrency, formatNumber } from '../utils/formatting';
 
 export const LiveStats: React.FC = () => {
-  const { walletAddress } = useUIStore();
-  const { data: portfolio, isLoading } = usePortfolioAnalysis(walletAddress);
+  const { walletAddress, funderAddress } = useUIStore();
+  const { data: portfolio, isLoading } = usePortfolioAnalysis(walletAddress, funderAddress);
 
   if (!walletAddress) {
     return (

@@ -18,13 +18,14 @@ export interface RewardCalculation {
 
 export const useRewardCalculation = (
   walletAddress: string | null,
-  marketId: string | null
+  marketId: string | null,
+  funderAddress?: string | null
 ) => {
   return useQuery({
-    queryKey: ['rewardCalculation', walletAddress, marketId],
+    queryKey: ['rewardCalculation', walletAddress, funderAddress, marketId],
     queryFn: async () => {
       if (!walletAddress || !marketId) return null;
-      const response = await rewardsAPI.calculate(walletAddress, marketId);
+      const response = await rewardsAPI.calculate(walletAddress, marketId, funderAddress);
       return response.data.data as RewardCalculation;
     },
     enabled: !!walletAddress && !!marketId,
@@ -33,12 +34,12 @@ export const useRewardCalculation = (
   });
 };
 
-export const useBatchRewards = (walletAddress: string | null) => {
+export const useBatchRewards = (walletAddress: string | null, funderAddress?: string | null) => {
   return useQuery({
-    queryKey: ['batchRewards', walletAddress],
+    queryKey: ['batchRewards', walletAddress, funderAddress],
     queryFn: async () => {
       if (!walletAddress) return [];
-      const response = await rewardsAPI.batch(walletAddress);
+      const response = await rewardsAPI.batch(walletAddress, funderAddress);
       return response.data.data;
     },
     enabled: !!walletAddress,

@@ -10,7 +10,7 @@ const router = Router();
 
 router.post('/move', async (req: Request, res: Response) => {
   try {
-    const { walletAddress, marketId, orderIndex, newPrice, newSize } = req.body;
+    const { walletAddress, funderAddress, marketId, orderIndex, newPrice, newSize } = req.body;
     
     if (!walletAddress || !marketId || orderIndex === undefined) {
       return res.status(400).json({
@@ -18,6 +18,8 @@ router.post('/move', async (req: Request, res: Response) => {
         error: 'walletAddress, marketId, and orderIndex are required',
       });
     }
+
+    const makerAddress = funderAddress || walletAddress;
     
     const market = await polymarketAPI.fetchMarketById(marketId);
     if (!market) {
@@ -35,7 +37,7 @@ router.post('/move', async (req: Request, res: Response) => {
       });
     }
     
-    const userOrders = await walletAPI.fetchOrdersByMarket(walletAddress, marketId);
+    const userOrders = await walletAPI.fetchOrdersByMarket(makerAddress, marketId);
     
     if (orderIndex >= userOrders.length) {
       return res.status(400).json({
@@ -83,7 +85,7 @@ router.post('/move', async (req: Request, res: Response) => {
 
 router.post('/price-adjustment', async (req: Request, res: Response) => {
   try {
-    const { walletAddress, marketId, priceAdjustment } = req.body;
+    const { walletAddress, funderAddress, marketId, priceAdjustment } = req.body;
     
     if (!walletAddress || !marketId || priceAdjustment === undefined) {
       return res.status(400).json({
@@ -108,7 +110,8 @@ router.post('/price-adjustment', async (req: Request, res: Response) => {
       });
     }
     
-    const userOrders = await walletAPI.fetchUserOrders(walletAddress);
+    const makerAddress = funderAddress || walletAddress;
+    const userOrders = await walletAPI.fetchUserOrders(makerAddress);
     
     const results = simulatePriceMove(
       userOrders,
@@ -138,7 +141,7 @@ router.post('/price-adjustment', async (req: Request, res: Response) => {
 
 router.post('/market-comparison', async (req: Request, res: Response) => {
   try {
-    const { walletAddress } = req.body;
+    const { walletAddress, funderAddress } = req.body;
     
     if (!walletAddress) {
       return res.status(400).json({
@@ -147,7 +150,8 @@ router.post('/market-comparison', async (req: Request, res: Response) => {
       });
     }
     
-    const userOrders = await walletAPI.fetchUserOrders(walletAddress);
+    const makerAddress = funderAddress || walletAddress;
+    const userOrders = await walletAPI.fetchUserOrders(makerAddress);
     const markets = await polymarketAPI.fetchMarkets();
     
     const marketIds = [...new Set(userOrders.map(order => order.marketId))];
@@ -178,7 +182,7 @@ router.post('/market-comparison', async (req: Request, res: Response) => {
 
 router.post('/portfolio', async (req: Request, res: Response) => {
   try {
-    const { walletAddress } = req.body;
+    const { walletAddress, funderAddress } = req.body;
     
     if (!walletAddress) {
       return res.status(400).json({
@@ -187,7 +191,8 @@ router.post('/portfolio', async (req: Request, res: Response) => {
       });
     }
     
-    const userOrders = await walletAPI.fetchUserOrders(walletAddress);
+    const makerAddress = funderAddress || walletAddress;
+    const userOrders = await walletAPI.fetchUserOrders(makerAddress);
     const markets = await polymarketAPI.fetchMarkets();
     
     const marketIds = [...new Set(userOrders.map(order => order.marketId))];

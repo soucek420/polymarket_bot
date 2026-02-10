@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { simulatorAPI } from '../utils/api';
 import { useState, useEffect } from 'react';
 
@@ -47,9 +47,12 @@ export const useMarketComparison = (walletAddress: string | null, funderAddress?
   return useQuery({
     queryKey: ['marketComparison', walletAddress, funderAddress],
     queryFn: async () => {
-      if (!walletAddress) return [];
+      if (!walletAddress) return { data: [], warning: null } as MarketComparisonResponse;
       const response = await simulatorAPI.marketComparison(walletAddress, funderAddress);
-      return response.data.data;
+      return {
+        data: response.data.data,
+        warning: response.data.warning || null,
+      } as MarketComparisonResponse;
     },
     enabled: !!walletAddress,
     refetchInterval: 30000,
@@ -76,13 +79,33 @@ export interface PortfolioAnalysis {
   rankings: any[];
 }
 
+
+export interface OrderFetchWarning {
+  code: string;
+  message: string;
+  hint: string;
+}
+
+export interface MarketComparisonResponse {
+  data: any[];
+  warning: OrderFetchWarning | null;
+}
+
+export interface PortfolioResponse {
+  data: PortfolioAnalysis;
+  warning: OrderFetchWarning | null;
+}
+
 export const usePortfolioAnalysis = (walletAddress: string | null, funderAddress?: string | null) => {
   return useQuery({
     queryKey: ['portfolio', walletAddress, funderAddress],
     queryFn: async () => {
       if (!walletAddress) return null;
       const response = await simulatorAPI.portfolio(walletAddress, funderAddress);
-      return response.data.data as PortfolioAnalysis;
+      return {
+        data: response.data.data,
+        warning: response.data.warning || null,
+      } as PortfolioResponse;
     },
     enabled: !!walletAddress,
     refetchInterval: 30000,

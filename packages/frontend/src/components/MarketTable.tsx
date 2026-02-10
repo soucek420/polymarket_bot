@@ -5,7 +5,9 @@ import { formatCurrency, formatNumber } from '../utils/formatting';
 
 export const MarketTable: React.FC = () => {
   const { walletAddress, funderAddress, setSelectedMarketId } = useUIStore();
-  const { data: rankings, isLoading } = useMarketComparison(walletAddress, funderAddress);
+  const { data: comparison, isLoading } = useMarketComparison(walletAddress, funderAddress);
+  const rankings = comparison?.data || [];
+  const warning = comparison?.warning;
   const [sortBy, setSortBy] = useState<'efficiency' | 'reward' | 'capital'>('efficiency');
 
   if (!walletAddress) {
@@ -35,6 +37,11 @@ export const MarketTable: React.FC = () => {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Market Rankings</h2>
         <p className="text-gray-500 dark:text-gray-400">No positions found</p>
+        {warning && (
+          <p className="mt-3 text-xs text-amber-700 dark:text-amber-300">
+            {warning.hint}
+          </p>
+        )}
       </div>
     );
   }
@@ -54,6 +61,12 @@ export const MarketTable: React.FC = () => {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+      {warning && (
+        <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-200">
+          {warning.hint}
+        </div>
+      )}
+
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Market Rankings</h2>
         

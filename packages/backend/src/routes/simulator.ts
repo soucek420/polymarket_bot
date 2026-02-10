@@ -8,6 +8,23 @@ import { UserOrder } from '../types';
 
 const router = Router();
 
+const buildOrderFetchWarning = (makerAddress: string, orderCount: number) => {
+  if (orderCount > 0) {
+    return null;
+  }
+
+  const lastError = walletAPI.getLastFetchError(makerAddress);
+  if (!lastError) {
+    return null;
+  }
+
+  return {
+    code: 'ORDER_FETCH_UNAUTHORIZED',
+    message: `No live orders were fetched for maker ${makerAddress}. ${lastError}`,
+    hint: 'Use your Polymarket funder address in the UI if it differs from the connected wallet. If Polymarket requires authenticated order access for your account, follow the README API credential guide.',
+  };
+};
+
 router.post('/move', async (req: Request, res: Response) => {
   try {
     const { walletAddress, funderAddress, marketId, orderIndex, newPrice, newSize } = req.body;
@@ -152,6 +169,7 @@ router.post('/market-comparison', async (req: Request, res: Response) => {
     
     const makerAddress = funderAddress || walletAddress;
     const userOrders = await walletAPI.fetchUserOrders(makerAddress);
+    const warning = buildOrderFetchWarning(makerAddress, userOrders.length);
     const markets = await polymarketAPI.fetchMarkets();
     
     const marketIds = [...new Set(userOrders.map(order => order.marketId))];
@@ -171,6 +189,7 @@ router.post('/market-comparison', async (req: Request, res: Response) => {
         efficiencyScore: ranking.efficiencyScore,
         rank: ranking.rank,
       })),
+      warning,
     });
   } catch (error: any) {
     res.status(500).json({
@@ -193,6 +212,7 @@ router.post('/portfolio', async (req: Request, res: Response) => {
     
     const makerAddress = funderAddress || walletAddress;
     const userOrders = await walletAPI.fetchUserOrders(makerAddress);
+    const warning = buildOrderFetchWarning(makerAddress, userOrders.length);
     const markets = await polymarketAPI.fetchMarkets();
     
     const marketIds = [...new Set(userOrders.map(order => order.marketId))];
@@ -227,6 +247,7 @@ router.post('/portfolio', async (req: Request, res: Response) => {
           rank: ranking.rank,
         })),
       },
+      warning,
     });
   } catch (error: any) {
     res.status(500).json({

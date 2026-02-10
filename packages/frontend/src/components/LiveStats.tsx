@@ -1,11 +1,13 @@
 import React from 'react';
 import { usePortfolioAnalysis } from '../hooks/useSimulation';
 import { useUIStore } from '../store/uiStore';
-import { formatCurrency, formatNumber } from '../utils/formatting';
+import { formatCurrency } from '../utils/formatting';
 
 export const LiveStats: React.FC = () => {
   const { walletAddress, funderAddress } = useUIStore();
-  const { data: portfolio, isLoading } = usePortfolioAnalysis(walletAddress, funderAddress);
+  const { data: portfolioResponse, isLoading } = usePortfolioAnalysis(walletAddress, funderAddress);
+  const portfolio = portfolioResponse?.data;
+  const warning = portfolioResponse?.warning;
 
   if (!walletAddress) {
     return (
@@ -35,6 +37,12 @@ export const LiveStats: React.FC = () => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
       <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200">Portfolio Stats</h2>
+
+      {warning && (
+        <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-200">
+          {warning.hint}
+        </div>
+      )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="space-y-2">

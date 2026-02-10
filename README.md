@@ -194,6 +194,8 @@ The repository already includes ready-to-use `.env` files for both packages. Rev
 ```env
 PORT=3001
 FRONTEND_URL=http://localhost:5173
+POLYMARKET_CLOB_BASE_URL=https://clob.polymarket.com
+POLYMARKET_ORDER_ENDPOINTS=/orders,/data/orders,/data/order
 ```
 
 **Frontend (`packages/frontend/.env`):**
@@ -204,6 +206,8 @@ VITE_API_URL=http://localhost:3001/api
 If you'd rather recreate them, copy from the `.env.example` files in each package.
 
 **What this does:** Tells the frontend where to find the backend API, and sets which port the backend listens on.
+
+`POLYMARKET_ORDER_ENDPOINTS` lets the backend try multiple order endpoints (in order) when Polymarket changes API routes.
 
 ---
 
@@ -242,6 +246,25 @@ You should see: `Server running on port 3001`
 npm run dev:frontend
 ```
 You should see: `Local: http://localhost:5173/`
+
+---
+
+### ✅ Tutorial: Connect your account so live orders actually show up
+
+If you can see your order on Polymarket but this app shows zero orders, use this exact checklist:
+
+1. **Connect wallet** in the app (top-right button).
+2. In **Funder address (Polymarket trading account)**, paste your Polymarket maker/funder address.
+   - On many setups this is **not** the same as your MetaMask EOA.
+   - If they differ, using wallet address alone will return no orders.
+3. Keep the app running with `npm run dev` and refresh once.
+4. Confirm backend logs no longer show repeated `Error fetching user orders ... 401`.
+5. Verify data appears in:
+   - **Live Stats**
+   - **Market Table**
+   - **Order Simulator**
+
+If Polymarket denies public order reads for your account, the backend now includes a warning message in API responses explaining that order retrieval was blocked and what to fix.
 
 ---
 
@@ -423,6 +446,22 @@ The market may not have active rewards or may have ended.
 
 ### "No markets available"
 Wait a moment - markets are being fetched from Polymarket API.
+
+### "Error fetching user orders ... 401" or no orders after connecting
+
+This means Polymarket rejected the order query for that maker address.
+
+Try this in order:
+
+1. Put your **funder/maker address** in the "Funder address" field (not just connected wallet).
+2. Restart backend after any `.env` changes.
+3. If Polymarket changed order API paths, update `POLYMARKET_ORDER_ENDPOINTS` in `packages/backend/.env`.
+4. Re-test with:
+   ```bash
+   npm run dev
+   ```
+
+The backend now attempts multiple endpoint/parameter combinations before giving up, and returns a warning payload when requests are unauthorized.
 
 ### Charts not displaying
 Ensure you've selected a market and connected your wallet.

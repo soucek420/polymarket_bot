@@ -15,6 +15,23 @@ import { UserOrder } from '../types';
 
 const router = Router();
 
+const buildOrderFetchWarning = (makerAddress: string, orderCount: number) => {
+  if (orderCount > 0) {
+    return null;
+  }
+
+  const lastError = walletAPI.getLastFetchError(makerAddress);
+  if (!lastError) {
+    return null;
+  }
+
+  return {
+    code: 'ORDER_FETCH_UNAUTHORIZED',
+    message: `No live orders were fetched for maker ${makerAddress}. ${lastError}`,
+    hint: 'If your orders are on a Polymarket funder/proxy address, enter that funder address in the UI. If Polymarket requires authenticated order access for your account, configure API credentials as documented in README.',
+  };
+};
+
 router.post('/calculate', async (req: Request, res: Response) => {
   try {
     const { walletAddress, funderAddress, marketId } = req.body;
@@ -45,6 +62,7 @@ router.post('/calculate', async (req: Request, res: Response) => {
     }
     
     const userOrders = await walletAPI.fetchOrdersByMarket(makerAddress, marketId);
+    const warning = buildOrderFetchWarning(makerAddress, userOrders.length);
     
     const midpoint = calculateMidpoint(orderBook.bestBid, orderBook.bestAsk);
     const v = market.maxRewardSpread;
@@ -77,6 +95,7 @@ router.post('/calculate', async (req: Request, res: Response) => {
         inBand,
         competitionQmin: competitionQmin.toString(),
         totalQmin: totalQmin.toString(),
+        warning,
       },
     });
   } catch (error: any) {
@@ -152,6 +171,7 @@ router.post('/batch', async (req: Request, res: Response) => {
 
     const makerAddress = funderAddress || walletAddress;
     const userOrders = await walletAPI.fetchUserOrders(makerAddress);
+    const warning = buildOrderFetchWarning(makerAddress, userOrders.length);
     const marketIds = [...new Set(userOrders.map(order => order.marketId))];
     
     const results = [];
@@ -190,6 +210,7 @@ router.post('/batch', async (req: Request, res: Response) => {
     res.json({
       success: true,
       data: results,
+      warning,
     });
   } catch (error: any) {
     res.status(500).json({
